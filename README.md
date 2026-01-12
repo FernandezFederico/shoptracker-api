@@ -211,6 +211,320 @@ curl http://localhost:8080/v1/purchases/summary?dateFrom=2026-01-01&dateTo=2026-
 
 ---
 
+## 📚 Documentación Detallada de Endpoints
+
+### Categories
+
+#### POST /v1/categories - Crear Categoría
+
+**Request:**
+```json
+{
+  "name": "Alimentos",
+  "icon": "food"
+}
+```
+
+**Response 201 Created:**
+```json
+{
+  "id": 1,
+  "name": "Alimentos",
+  "icon": "food"
+}
+```
+
+**Validaciones:**
+- `name`: Obligatorio, 1-50 caracteres, único
+- `icon`: Opcional, máximo 50 caracteres
+
+**Posibles errores:**
+- `400 Bad Request`: Nombre vacío o muy largo
+- `409 Conflict`: Ya existe una categoría con ese nombre
+
+---
+
+### Products
+
+#### POST /v1/products - Crear Producto
+
+**Request:**
+```json
+{
+  "name": "Leche Entera",
+  "categoryId": 1,
+  "unitId": 3
+}
+```
+
+**Response 201 Created:**
+```json
+{
+  "id": 1,
+  "name": "Leche Entera",
+  "categoryId": 1,
+  "unitId": 3,
+  "createdAt": "2026-01-07T10:30:00"
+}
+```
+
+**Validaciones:**
+- `name`: Obligatorio, 1-100 caracteres, único
+- `categoryId`: Obligatorio, debe existir
+- `unitId`: Obligatorio, debe existir
+
+**Posibles errores:**
+- `400 Bad Request`: Datos inválidos
+- `404 Not Found`: Categoría o unidad no existe
+- `409 Conflict`: Ya existe un producto con ese nombre
+
+#### GET /v1/products - Listar Productos (Paginado)
+
+**Request:**
+```
+GET /v1/products?page=1&pageSize=20&name=leche
+```
+
+**Response 200 OK:**
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "Leche Entera",
+      "categoryId": 1,
+      "unitId": 3,
+      "createdAt": "2026-01-07T10:30:00"
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pageSize": 20
+}
+```
+
+**Parámetros:**
+- `page`: Número de página (default: 1, mínimo: 1)
+- `pageSize`: Elementos por página (default: 20, rango: 1-100)
+- `name`: Búsqueda parcial por nombre (opcional)
+
+---
+
+### Stores
+
+#### POST /v1/stores - Crear Tienda
+
+**Request:**
+```json
+{
+  "name": "Mercadona",
+  "address": "Calle Principal 123",
+  "city": "A Coruña",
+  "isOnline": false,
+  "latitude": 43.3623,
+  "longitude": -8.4115
+}
+```
+
+**Response 201 Created:**
+```json
+{
+  "id": 1,
+  "name": "Mercadona",
+  "address": "Calle Principal 123",
+  "city": "A Coruña",
+  "isOnline": false,
+  "latitude": 43.3623,
+  "longitude": -8.4115
+}
+```
+
+**Validaciones:**
+- `name`: Obligatorio, 1-100 caracteres, único
+- `address`: Obligatorio, 1-200 caracteres
+- `city`: Obligatorio, 1-100 caracteres
+- `isOnline`: Opcional (default: false)
+- `latitude`: Opcional, rango: -90 a 90
+- `longitude`: Opcional, rango: -180 a 180
+
+**Posibles errores:**
+- `400 Bad Request`: Datos inválidos o coordenadas fuera de rango
+- `409 Conflict`: Ya existe una tienda con ese nombre
+
+---
+
+### Purchases
+
+#### POST /v1/purchases - Crear Compra
+
+**Request:**
+```json
+{
+  "productId": 1,
+  "storeId": 1,
+  "quantity": 2,
+  "unitPrice": 1.50,
+  "purchaseDate": "2026-01-04"
+}
+```
+
+**Response 201 Created:**
+```json
+{
+  "id": 1,
+  "productId": 1,
+  "storeId": 1,
+  "quantity": 2.000,
+  "unitPrice": 1.500,
+  "totalPrice": 3.000,
+  "purchaseDate": "2026-01-04"
+}
+```
+
+**Validaciones:**
+- `productId`: Obligatorio, debe existir
+- `storeId`: Obligatorio, debe existir
+- `quantity`: Obligatorio, mínimo 0.01
+- `unitPrice`: Obligatorio, mínimo 0
+- `purchaseDate`: Opcional (default: hoy), no puede ser futura
+
+**Cálculos automáticos:**
+- `totalPrice` se calcula automáticamente: `quantity × unitPrice`
+
+**Posibles errores:**
+- `400 Bad Request`: Datos inválidos o fecha futura
+- `404 Not Found`: Producto o tienda no existe
+
+#### GET /v1/purchases/summary - Estadísticas de Compras
+
+**Request:**
+```
+GET /v1/purchases/summary?dateFrom=2026-01-01&dateTo=2026-01-31
+```
+
+**Response 200 OK:**
+```json
+{
+  "totalSpent": 125.50,
+  "totalPurchases": 15,
+  "averagePerPurchase": 8.37,
+  "period": {
+    "from": "2026-01-01",
+    "to": "2026-01-31"
+  }
+}
+```
+
+**Parámetros:**
+- `dateFrom`: Fecha inicio (opcional, formato: YYYY-MM-DD)
+- `dateTo`: Fecha fin (opcional, formato: YYYY-MM-DD)
+- Si no se proporcionan, se incluyen todas las compras
+
+**Posibles errores:**
+- `400 Bad Request`: Fecha de inicio posterior a fecha de fin
+
+---
+
+### Units
+
+#### GET /v1/units - Listar Unidades de Medida
+
+**Response 200 OK:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Kilogramo",
+    "abbreviation": "kg"
+  },
+  {
+    "id": 2,
+    "name": "Gramo",
+    "abbreviation": "g"
+  },
+  {
+    "id": 3,
+    "name": "Litro",
+    "abbreviation": "L"
+  }
+]
+```
+
+**Nota:** Las unidades son predefinidas y solo permiten lectura (GET).
+
+---
+
+## 🔒 Códigos de Error Comunes
+
+| Código | Descripción | Cuándo ocurre |
+|--------|-------------|---------------|
+| **200 OK** | Operación exitosa | GET, PUT exitosos |
+| **201 Created** | Recurso creado | POST exitoso |
+| **204 No Content** | Eliminación exitosa | DELETE exitoso |
+| **400 Bad Request** | Datos inválidos | Validación de formato falla |
+| **404 Not Found** | Recurso no encontrado | ID no existe |
+| **409 Conflict** | Conflicto de unicidad | Nombre duplicado |
+| **500 Internal Server Error** | Error del servidor | Error inesperado |
+
+### Estructura de Respuestas de Error
+
+**Validación (400):**
+```json
+{
+  "timestamp": "2026-01-07T10:30:00",
+  "status": 400,
+  "error": "Validación fallida",
+  "fieldErrors": {
+    "name": "El nombre es obligatorio",
+    "quantity": "La cantidad mínima es 0.01"
+  }
+}
+```
+
+**Recurso no encontrado (404):**
+```json
+{
+  "timestamp": "2026-01-07T10:30:00",
+  "status": 404,
+  "error": "Recurso no encontrado",
+  "message": "Categoría no encontrada con id: 999"
+}
+```
+
+**Duplicado (409):**
+```json
+{
+  "timestamp": "2026-01-07T10:30:00",
+  "status": 409,
+  "error": "Recurso duplicado",
+  "message": "Ya existe una categoría con el nombre: Alimentos"
+}
+```
+
+---
+
+## 📸 Screenshots
+
+### Crear Compra (POST)
+![POST Purchase](docs/screenshots/01-post-purchase-success.png)
+
+### Listar Compras con Paginación (GET)
+![GET Purchases](docs/screenshots/02-get-purchases-paginated.png)
+
+### Estadísticas de Gastos (GET /summary)
+![Summary Stats](docs/screenshots/03-get-summary-stats.png)
+
+### Validación de Datos (Error 400)
+![Error 400](docs/screenshots/04-error-validation-400.png)
+
+### Nombre Duplicado (Error 409)
+![Error 409](docs/screenshots/05-error-duplicate-409.png)
+
+### Consola H2 - Base de Datos
+![H2 Console](docs/screenshots/06-h2-console.png)
+
+---
+
 ## 🧪 Testing
 
 ### Ejecutar tests
