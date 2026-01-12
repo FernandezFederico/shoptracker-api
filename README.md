@@ -1,6 +1,6 @@
 # 🛒 ShopTracker API
 
-API REST profesional para registro y análisis de compras personales, desarrollada con **Spring Boot 4** y arquitectura en capas.
+API REST para registro y análisis de compras personales, desarrollada con **Spring Boot 4** y arquitectura en capas.
 
 [![Java](https://img.shields.io/badge/Java-17-orange)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.1-brightgreen)](https://spring.io/projects/spring-boot)
@@ -10,6 +10,7 @@ API REST profesional para registro y análisis de compras personales, desarrolla
 
 ## 📋 Tabla de Contenidos
 
+- [Demo en Vivo](#-demo-en-vivo)
 - [Características](#-características)
 - [Tecnologías](#-tecnologías)
 - [Arquitectura](#-arquitectura)
@@ -19,6 +20,40 @@ API REST profesional para registro y análisis de compras personales, desarrolla
 - [Testing](#-testing)
 - [Roadmap](#-roadmap)
 - [Autor](#-autor)
+
+---
+
+## 🌐 Demo en Vivo
+
+La API está desplegada y disponible públicamente en Railway:
+
+**Base URL:** `https://shoptracker-api-production.up.railway.app`
+
+### Ejemplos de uso:
+
+**Listar unidades de medida:**
+```bash
+curl https://shoptracker-api-production.up.railway.app/v1/units
+```
+
+**Listar categorías:**
+```bash
+curl https://shoptracker-api-production.up.railway.app/v1/categories
+```
+
+**Crear una categoría:**
+```bash
+curl -X POST https://shoptracker-api-production.up.railway.app/v1/categories \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Alimentos","icon":"food"}'
+```
+
+**Obtener estadísticas de compras:**
+```bash
+curl https://shoptracker-api-production.up.railway.app/v1/purchases/summary
+```
+
+> 💡 **Nota:** La base de datos se reinicia periódicamente en el plan gratuito de Railway. Los datos son temporales para propósitos de demo.
 
 ---
 
@@ -32,7 +67,9 @@ API REST profesional para registro y análisis de compras personales, desarrolla
 - ✅ **Estadísticas** de gastos por período
 - ✅ **Arquitectura limpia** en capas
 - ✅ **Tests unitarios** con JUnit 5 y Mockito
-- ✅ **Base de datos H2** (desarrollo) con migración a PostgreSQL preparada
+- ✅ **Multi-entorno** (desarrollo/producción)
+- ✅ **Base de datos H2** (desarrollo)
+- ✅ **Desplegado en Railway** con PostgreSQL
 
 ---
 
@@ -45,13 +82,15 @@ API REST profesional para registro y análisis de compras personales, desarrolla
 - **Spring Validation** - Validaciones
 - **Lombok** - Reducción de código boilerplate
 - **H2 Database** - Base de datos en memoria (desarrollo)
+- **PostgreSQL 16** - Producción (Railway)
 
 ### Testing
 - **JUnit 5** - Framework de testing
 - **Mockito** - Mocks y stubs
 - **AssertJ** - Assertions fluidas
 
-### Herramientas
+### Deploy & Infraestructura
+- **Railway** -  Plataforma de deployment en la nube
 - **Maven** - Gestión de dependencias
 - **Git** - Control de versiones
 
@@ -88,8 +127,10 @@ src/
 │   │   │   └── dto/         # DTOs
 │   │   └── exception/       # Excepciones personalizadas
 │   └── resources/
-│       ├── application.properties
-│       └── data.sql         # Datos iniciales
+│       ├── application.properties        # Config general
+│       ├── application-dev.properties    # Config desarrollo (H2)
+│       ├── application-prod.properties   # Config producción (PostgreSQL)
+│       └── data.sql                      # Datos iniciales
 └── test/
     └── java/com/shoptracker/
         └── service/         # Tests unitarios
@@ -118,7 +159,7 @@ src/
    mvn clean install
 ```
 
-3. **Ejecutar la aplicación**
+3. **Ejecutar la aplicación (entorno desarrollo)**
 ```bash
    mvn spring-boot:run
 ```
@@ -132,7 +173,9 @@ src/
 
 ---
 
-## 📖 Uso
+## 📖 Uso (Desarrollo)
+
+## Entorno Local (Desarrollo)
 
 ### Crear una categoría
 ```bash
@@ -162,9 +205,68 @@ curl -X POST http://localhost:8080/v1/purchases \
 curl http://localhost:8080/v1/purchases/summary?dateFrom=2026-01-01&dateTo=2026-01-31
 ```
 
+## Entorno Producción (Railway)
+
+### Crear una categoría
+```bash
+curl -X POST https://shoptracker-api-production.up.railway.app/v1/categories \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Bebidas",
+    "icon": "drink"
+  }'
+```
+
+### Crear un producto
+```bash
+curl -X POST https://shoptracker-api-production.up.railway.app/v1/products \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Leche Entera",
+    "categoryId": 1,
+    "unitId": 3
+  }'
+```
+
+### Crear una tienda
+```bash
+curl -X POST https://shoptracker-api-production.up.railway.app/v1/stores \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Mercadona",
+    "address": "Calle Principal 123",
+    "city": "A Coruña",
+    "isOnline": false,
+    "latitude": 43.3623,
+    "longitude": -8.4115
+  }'
+```
+
+### Crear una compra
+```bash
+curl -X POST https://shoptracker-api-production.up.railway.app/v1/purchases \
+  -H "Content-Type: application/json" \
+  -d '{
+    "productId": 1,
+    "storeId": 1,
+    "quantity": 2,
+    "unitPrice": 1.50,
+    "purchaseDate": "2026-01-12"
+  }'
+```
+
+### Obtener estadísticas
+```bash
+curl "https://shoptracker-api-production.up.railway.app/v1/purchases/summary?dateFrom=2026-01-01&dateTo=2026-01-31"
+```
+
 ---
 
 ## 🌐 Endpoints
+
+**Base URL (Producción):** `https://shoptracker-api-production.up.railway.app`
+
+**Base URL (Local):** `http://localhost:8080`
 
 ### Categories
 | Método | Endpoint | Descripción |
@@ -501,6 +603,101 @@ GET /v1/purchases/summary?dateFrom=2026-01-01&dateTo=2026-01-31
 }
 ```
 
+## 🚀 Deployment
+
+### Producción (Railway)
+
+La aplicación está desplegada automáticamente en Railway:
+
+**URL:** https://shoptracker-api-production.up.railway.app
+
+**Stack de Producción:**
+- **Plataforma:** Railway
+- **Base de Datos:** PostgreSQL 16
+- **Runtime:** Java 17
+- **Build Tool:** Maven
+
+**Variables de Entorno:**
+```properties
+SPRING_PROFILES_ACTIVE=prod
+PGHOST=<railway-internal-host>
+PGPORT=5432
+PGDATABASE=railway
+PGUSER=postgres
+PGPASSWORD=<auto-generated>
+PORT=8080
+```
+
+**Proceso de Deploy:**
+   
+1. Push a la rama `main`
+2. Railway detecta cambios automáticamente
+3. Ejecuta `mvn clean install`
+4. Inicia la aplicación con el perfil `prod`
+5. Se conecta a PostgreSQL usando las variables de entorno
+
+**Monitoreo:**
+- Logs en tiempo real disponibles en Railway Dashboard
+- Métricas de CPU, memoria y tráfico
+- Health checks automáticos
+
+---
+
+**Desplegar tu propia instancia**
+
+**En Railway:**
+1. **Fork este repositorio**
+2. **Crea una cuenta en Railway:** https://railway.app
+3. **Nuevo Proyecto:**
+   - Selecciona "Deploy from GitHub repo"
+   - Autoriza Railway a acceder a tu GitHub
+   - Selecciona tu fork de `shoptracker-api`
+4. **Añadir PostgreSQL:**
+   - En tu proyecto, click "+ New"
+   - Selecciona "Database" → "PostgreSQL"
+5. Conectar la base de datos:
+   - Ve a tu servicio Spring Boot
+   - Click en "Variables"
+   - Click "+ New Variable" → "Add Reference"
+   - Selecciona el servicio PostgreSQL
+6. Añadir variable de perfil:
+   - Variable: SPRING_PROFILES_ACTIVE
+   - Valor: prod
+7. Deploy automático:
+   - Railway desplegará automáticamente
+   - Obtendrás una URL pública para tu API
+
+---
+**Local Development**
+
+**Ejecutar en modo desarrollo (H2):**
+```bash
+ mvn spring-boot:run
+```
+
+**Ejecutar en modo producción local (PostgreSQL):**
+```bash
+export SPRING_PROFILES_ACTIVE=prod
+export PGHOST=localhost
+export PGPORT=5432
+export PGDATABASE=shoptracker
+export PGUSER=postgres
+export PGPASSWORD=tu_password
+
+mvn spring-boot:run
+```
+
+**Ejecutar tests:**
+```bash
+ mvn test
+```
+
+**Crear JAR:**
+```bash
+mvn clean package
+java -jar target/shoptracker-api-0.0.1-SNAPSHOT.jar
+```
+
 ---
 
 ## 📸 Screenshots
@@ -586,9 +783,54 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 ## 🎯 Motivación
 
-- Proyecto creado como parte del aprendizaje de Spring Boot
-- Inspirado en necesidades reales de gestión de compras personales
+### El problema real
 
----
+Este proyecto nació de una **doble necesidad personal**:
+
+**🇦🇷 En Argentina:** La inflación galopante hace que los precios cambien semanalmente. Lo que ayer costaba $100, hoy puede costar $150, y es imposible recordar si estás pagando bien o te están cobrando de más.
+
+**🇪🇸 En España:** Como inmigrante recién llegado, no se tiene referencias de precios. ¿3€ por un litro de leche es caro? ¿Ese "descuento" en Mercadona realmente lo es? Sin un marco de referencia, es difícil optimizar gastos y adaptarse a una nueva economía.
+
+### La solución
+
+**ShopTracker** resuelve ambos problemas permitiéndote:
+- 📊 **Registrar precios** cada vez que compras
+- 📈 **Comprar precios** de forma al instante
+- 🏪 **Comparar tiendas** para saber dónde es más barato
+- 💰 **Controlar tu presupuesto** mensual
+- 🧠 **Construir tu propia base de referencia** de precios
+
+### Casos de uso reales
+
+**Para inflación alta:**
+```
+Aceite de Girasol (1L)
+15/11: $450 → 30/11: $520 (↑15%) → 10/12: $480
+Insight: Mejor comprar en la primera quincena
+```
+
+**Para recién llegados:**
+```
+Leche (1L) en España:
+Mercadona: 1,20€ | Lidl: 0,95€ | Carrefour: 1,10€
+→ Ahorro de 300€/año comprando en Lidl
+```
+
+**Para optimizar gastos:**
+```
+Resumen mensual:
+Alimentos: 450€ (60%) | Bebidas: 120€ (16%)
+→ Reducir bebidas = 40€ ahorrados
+```
+
+### El aprendizaje técnico
+
+Lo que empezó como una herramienta personal se convirtió en un proyecto completo para aprender:
+- 🎓 **Spring Boot 4** desde cero
+- 🏗️ **Arquitectura limpia** en capas
+- ✅ **Validaciones** robustas y manejo de errores
+- 🧪 **Testing** unitario con JUnit 5 y Mockito
+- 🚀 **Deployment** en Railway con PostgreSQL
+- 📊 **Resolver un problema real** con código---
 
 ⭐ Si este proyecto te fue útil, no olvides darle una estrella en GitHub!
