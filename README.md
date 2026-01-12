@@ -211,6 +211,28 @@ curl http://localhost:8080/v1/purchases/summary?dateFrom=2026-01-01&dateTo=2026-
 
 ---
 
+## 📸 Screenshots
+
+### Crear Compra (POST)
+![POST Purchase](docs/screenshots/01-post-purchase-success.png)
+
+### Listar Compras con Paginación (GET)
+![GET Purchases](docs/screenshots/02-get-purchases-paginated.png)
+
+### Estadísticas de Gastos (GET /summary)
+![Summary Stats](docs/screenshots/03-get-summary-stats.png)
+
+### Validación de Datos (Error 400)
+![Error 400](docs/screenshots/04-error-validation-400.png)
+
+### Nombre Duplicado (Error 409)
+![Error 409](docs/screenshots/05-error-duplicate-409.png)
+
+### Consola H2 - Base de Datos
+![H2 Console](docs/screenshots/06-h2-console.png)
+
+---
+
 ## 🧪 Testing
 
 ### Ejecutar tests
