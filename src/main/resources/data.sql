@@ -1,12 +1,28 @@
--- Insertar unidades de medida predefinidas
-INSERT INTO units (name, abbreviation) VALUES ('Kilogramo', 'kg');
-INSERT INTO units (name, abbreviation) VALUES ('Gramo', 'g');
-INSERT INTO units (name, abbreviation) VALUES ('Litro', 'L');
-INSERT INTO units (name, abbreviation) VALUES ('Mililitro', 'ml');
-INSERT INTO units (name, abbreviation) VALUES ('Unidad', 'u');
-INSERT INTO units (name, abbreviation) VALUES ('Paquete', 'paq');
-INSERT INTO units (name, abbreviation) VALUES ('Caja', 'caja');
+-- Insertar unidades de medida solo si no existen
+INSERT INTO units (name, abbreviation)
+SELECT 'Kilogramo', 'kg'
+    WHERE NOT EXISTS (SELECT 1 FROM units WHERE name = 'Kilogramo');
 
-INSERT  INTO categories (icon, name) VALUES ('box', 'Not designated');
-INSERT  INTO categories (icon, name) VALUES ('pizza', 'foods');
-INSERT  INTO categories (icon, name) VALUES ('home', 'home');
+INSERT INTO units (name, abbreviation)
+SELECT 'Gramo', 'g'
+    WHERE NOT EXISTS (SELECT 1 FROM units WHERE name = 'Gramo');
+
+INSERT INTO units (name, abbreviation)
+SELECT 'Litro', 'L'
+    WHERE NOT EXISTS (SELECT 1 FROM units WHERE name = 'Litro');
+
+INSERT INTO units (name, abbreviation)
+SELECT 'Mililitro', 'ml'
+    WHERE NOT EXISTS (SELECT 1 FROM units WHERE name = 'Mililitro');
+
+INSERT INTO units (name, abbreviation)
+SELECT 'Unidad', 'u'
+    WHERE NOT EXISTS (SELECT 1 FROM units WHERE name = 'Unidad');
+
+INSERT INTO units (name, abbreviation)
+SELECT 'Paquete', 'paq'
+    WHERE NOT EXISTS (SELECT 1 FROM units WHERE name = 'Paquete');
+
+INSERT INTO units (name, abbreviation)
+SELECT 'Caja', 'caja'
+    WHERE NOT EXISTS (SELECT 1 FROM units WHERE name = 'Caja');
