@@ -750,8 +750,8 @@ mvn test
 
 ### 🚧 En Progreso
 - [ ] Completar cobertura de tests (80%+)
-- [ ] Deploy en Railway/Render
-- [ ] Migración a PostgreSQL
+- [x] Deploy en Railway
+- [x] Migración a PostgreSQL
 
 ### 📅 Futuro (v2.0)
 - [ ] Autenticación con JWT
